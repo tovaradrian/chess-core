@@ -26,14 +26,25 @@ describe('Pawn - En Passant', () => {
 
     const {x, y} = pawn.position;
     const targetX = x + 1, targetY = y + 1;
+    const targetPosition = [targetX, targetY];
 
-    it('has available moves', () => {
+    it('is in available moves', () => {
         const availableMoves = pawn.availableMoves();
         expect(availableMoves).toEqual(expect.arrayContaining([[x, targetY], [targetX, targetY]]));
     })
 
-    it('can do En Passant capture', () => {
-        board.pieces = [pawn, opponentPawn];
-        expect(pawn.canAttack(targetX, targetY)).toBeTruthy();
+    it('can attack', () => {
+        expect(pawn.canAttack(...targetPosition)).toBeTruthy();
+    })
+
+    it('can move', () => {
+        expect(board.canMove(pawn, targetPosition)).toBeTruthy();
+    })
+
+    it('can capture', () => {
+        board.movePiece(pawn, targetPosition);
+        expect(pawn.position.x).toBe(targetX);
+        expect(pawn.position.y).toBe(targetY);
+        expect(opponentPawn.captured).toBeTruthy();
     })
 })
