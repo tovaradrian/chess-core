@@ -12,10 +12,14 @@ class Piece {
     #moved = false;
 
     constructor({id, type, color, position, captured, board = null}) {
+        if (new.target === Piece) {
+            throw new TypeError("Cannot construct Piece instances directly");
+        }
+
         this.#id = id;
         this.#type = type;
-        this.#color = color;
-        this.#position = position;
+        this.color = color;
+        this.position = position;
         this.#board = board;
         if (captured) this.capture();
     }
@@ -45,8 +49,20 @@ class Piece {
         return this.#color;
     }
 
+    set color(color) {
+        const colors = Object.values(PIECE_COLORS);
+        if (!colors.includes(color)) throw 'Invalid piece color!';
+        this.#color = color;
+    }
+
     get position() {
         return this.#position;
+    }
+
+    set position(position) {
+        const {x, y} = position;
+        if (!x || !y) throw "Invalid piece position!";
+        this.#position = {x, y};
     }
 
     get board() {
@@ -92,6 +108,7 @@ class Piece {
     kingInDanger(x, y) {
         const boardState = this.board.getAfterMoveState(this, [x, y]);
         const king = boardState.pieces.find(p => p.name === PIECE_TYPES.KING.name && p.color === this.color);
+        if (!king) return false;
         return king.isInDanger(null, null, boardState);
     }
 

@@ -11,12 +11,17 @@ class Pawn extends Piece {
         super({id, type, color, position, captured, board});
     }
 
+    canMove(x, y) {
+        if (this.isEnPassantCapture(x, y)) return true;
+        return super.canMove(x, y);
+    }
+
     canAttack(x, y) {
         return this.isEnPassantCapture(x, y) || super.canAttack(x, y);
     }
 
     isEnPassantCapture(targetX, targetY) {
-        if (!this.isAttackMovement(targetX, targetY)) return false;
+        if (!this.isAttackMovement(targetX, targetY) || this.board.hasPiece(targetX, targetY)) return false;
         const targetPiece = this.getEnPassantPawn(targetX, targetY);
         if (!targetPiece || !this.isOpponent(targetPiece) || targetPiece.name !== PIECE_TYPES.PAWN.name) return false;
         const {piece: lastMovedPiece, previousPosition, position} = this.board.getLastMovement();
