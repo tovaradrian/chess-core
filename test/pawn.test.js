@@ -1,9 +1,8 @@
 const Pawn = require('../models/pawn.model');
 const board = require('../controllers/board.controller');
 const PIECE_COLORS = require('../data/pieceColors');
-const PIECE_TYPES = require('../data/pieceTypes');
 
-describe('Pawn - c', () => {
+describe('Pawn - En Passant', () => {
     const pawn = new Pawn({
         id: 'pawnA2',
         color: PIECE_COLORS.LIGHT,
