@@ -58,18 +58,18 @@ class MatchController {
     }
 
     checkmateValidation() {
-        for (const piece of this.model.board.pieces) {
-            const threat = piece.getThreat();
-            if (piece.name === PIECE_TYPES.KING.name && threat !== null) {
-                this.model.players.find(p => p.color === piece.color).inCheck = true;
-                const {x, y} = piece.position;
-                if (!piece.hasMoves() && !threat.canBeBlocked(x, y)) {
-                    const winner = piece.color === PIECE_COLORS.DARK ? this.getLightPlayer() : this.getDarkPlayer();
-                    this.finish(winner);
-                    return true;
-                }
-                return false;
+        const {pieces} = this.model.board;
+        for (const king of pieces.filter(p => p.name === PIECE_TYPES.KING.name)) {
+            const threat = king.getThreat();
+            if (threat === null) continue;
+            this.model.players.find(p => p.color === king.color).inCheck = true;
+            const {x, y} = king.position;
+            if (!king.hasMoves() && !threat.canBeBlocked(x, y)) {
+                const winner = king.color === PIECE_COLORS.DARK ? this.getLightPlayer() : this.getDarkPlayer();
+                this.finish(winner);
+                return true;
             }
+            return false;
         }
         const {inCheckPlayer} = this.model;
         if (inCheckPlayer) this.model.inCheckPlayer.inCheck = false;
