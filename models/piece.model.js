@@ -69,7 +69,7 @@ class Piece {
 
     set position(position) {
         const {x, y} = position;
-        if (!x || !y) throw "Invalid piece position!";
+        if (x < 0 || x > 8 || y < 0 || y > 8) throw "Invalid piece position!";
         this.#position = {x, y};
     }
 
