@@ -47,7 +47,6 @@ class MatchController {
     nextTurn() {
         if (!this.model.hasRequiredPlayers()) return this.model.turn;
         this.model.turn = {...this.model.players.filter(p => p.name !== this.model.turn?.name)[0]};
-        this.stalemateValidation();
         return this.model.turn;
     }
 
@@ -58,6 +57,7 @@ class MatchController {
             board.movePiece(targetPiece, targetPosition);
             if (board.canPromote(targetPiece)) return true;
             if (!this.checkmateValidation()) this.nextTurn();
+            this.stalemateValidation();
             return true;
         }
         return false;
@@ -157,6 +157,7 @@ class MatchController {
                 lastMovement.piece = board.createPiece(lastMovement.piece);
                 board.model.lastMovement = lastMovement;
             }
+            if (!this.checkmateValidation()) this.stalemateValidation();
         }
     }
 }
