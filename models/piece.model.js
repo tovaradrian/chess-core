@@ -59,6 +59,14 @@ class Piece {
         return this.#position;
     }
 
+    get x() {
+        return this.#position.x;
+    }
+
+    get y() {
+        return this.#position.y;
+    }
+
     set position(position) {
         const {x, y} = position;
         if (!x || !y) throw "Invalid piece position!";
