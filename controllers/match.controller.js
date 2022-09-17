@@ -1,7 +1,6 @@
 const Match = require('../models/match.model');
 const PIECE_COLORS = require('../data/pieceColors');
 const PIECE_TYPES = require("../data/pieceTypes");
-const board = require("../controllers/board.controller");
 
 class MatchController {
     #model;
@@ -86,14 +85,10 @@ class MatchController {
     stalemateValidation() {
         const turn = this.getTurn();
         if (!turn) return false;
-        const pieces = this.model.board.pieces.filter(p => p.color === turn.color);
-        for (const piece of pieces) {
-            if (piece.availableMoves().length) {
-                this.finish();
-                return true;
-            }
-        }
-        return false;
+        const pieces = this.model.board.pieces.filter(p => p.color === turn.color && !p.captured);
+        for (const piece of pieces) if (piece.availableMoves().length) return false;
+        this.finish();
+        return true;
     }
 
     promotePawn(targetPiece, promoteTo) {
