@@ -158,7 +158,9 @@ class MatchController {
                 board.model.lastMovement = lastMovement;
             }
             if (!this.checkmateValidation()) this.stalemateValidation();
+            return true;
         }
+        return false;
     }
 }
 
