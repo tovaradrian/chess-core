@@ -86,7 +86,7 @@ class MatchController {
         const turn = this.getTurn();
         if (!turn) return false;
         const pieces = this.model.board.pieces.filter(p => p.color === turn.color && !p.captured);
-        for (const piece of pieces) if (piece.availableMoves().length) return false;
+        for (const piece of pieces) if (piece.hasMoves()) return false;
         this.finish();
         return true;
     }

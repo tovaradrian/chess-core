@@ -147,24 +147,24 @@ class BoardController {
             enPassantPawn = targetPiece.getEnPassantPawn(targetX, targetY);
         }
 
-        this.pieces = this.model.pieces.map(piece => {
-            if (piece.id === targetPiece.id) {
-                piece.move(targetX, targetY);
-            } else if (castlingRook && piece.id === castlingRook.id) {
-                piece.move(...targetPiece.getCastlingRookPosition(targetX, targetY));
-            } else if (enPassantPawn && piece.id === enPassantPawn.id) {
-                capturedPiece = piece;
-                piece.capture();
-            }
-            return piece;
-        });
-
         this.model.lastMovement = {
             piece: targetPiece,
             previousPosition: [targetPiece.position.x, targetPiece.position.y],
             position: [...targetPosition],
             capture: capturedPiece,
         };
+
+        this.pieces = this.model.pieces.map(piece => {
+            if (piece.id === targetPiece.id) {
+                piece.move(targetX, targetY);
+            } else if (castlingRook && piece.id === castlingRook.id) {
+                piece.move(...targetPiece.getCastlingRookPosition(targetX, targetY));
+            } else if (enPassantPawn && piece.id === enPassantPawn.id) {
+                this.model.lastMovement.capture = piece;
+                piece.capture();
+            }
+            return piece;
+        });
     }
 
     getLastMovement() {
