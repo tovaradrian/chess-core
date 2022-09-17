@@ -130,8 +130,10 @@ class BoardController {
         if (!targetPiece) return false;
         const [targetX, targetY] = targetPosition;
         const targetSlot = this.model.slots.get(`${targetX}_${targetY}`);
+        let capturedPiece = null;
 
         if (targetSlot.piece) {
+            capturedPiece = targetSlot.piece;
             targetSlot.piece.capture();
         }
 
@@ -145,22 +147,24 @@ class BoardController {
             enPassantPawn = targetPiece.getEnPassantPawn(targetX, targetY);
         }
 
-        this.model.lastMovement = {
-            piece: targetPiece,
-            previousPosition: [targetPiece.position.x, targetPiece.position.y],
-            position: [...targetPosition],
-        };
-
         this.pieces = this.model.pieces.map(piece => {
             if (piece.id === targetPiece.id) {
                 piece.move(targetX, targetY);
             } else if (castlingRook && piece.id === castlingRook.id) {
                 piece.move(...targetPiece.getCastlingRookPosition(targetX, targetY));
             } else if (enPassantPawn && piece.id === enPassantPawn.id) {
+                capturedPiece = piece;
                 piece.capture();
             }
             return piece;
         });
+
+        this.model.lastMovement = {
+            piece: targetPiece,
+            previousPosition: [targetPiece.position.x, targetPiece.position.y],
+            position: [...targetPosition],
+            capture: capturedPiece,
+        };
     }
 
     getLastMovement() {
