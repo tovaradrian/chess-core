@@ -1,6 +1,7 @@
 const Match = require('../models/match.model');
 const PIECE_COLORS = require('../data/pieceColors');
 const PIECE_TYPES = require("../data/pieceTypes");
+const board = require("../controllers/board.controller");
 
 class MatchController {
     #model;
@@ -11,6 +12,10 @@ class MatchController {
 
     get model() {
         return this.#model;
+    }
+
+    getBoard() {
+        return this.model.board;
     }
 
     setBoard(board) {
@@ -42,6 +47,7 @@ class MatchController {
     nextTurn() {
         if (!this.model.hasRequiredPlayers()) return this.model.turn;
         this.model.turn = {...this.model.players.filter(p => p.name !== this.model.turn?.name)[0]};
+        this.stalemateValidation();
         return this.model.turn;
     }
 
@@ -74,6 +80,19 @@ class MatchController {
         const {inCheckPlayer} = this.model;
         if (inCheckPlayer) this.model.inCheckPlayer.inCheck = false;
 
+        return false;
+    }
+
+    stalemateValidation() {
+        const turn = this.getTurn();
+        if (!turn) return false;
+        const pieces = this.model.board.pieces.filter(p => p.color === turn.color);
+        for (const piece of pieces) {
+            if (piece.availableMoves().length) {
+                this.finish();
+                return true;
+            }
+        }
         return false;
     }
 
@@ -121,6 +140,24 @@ class MatchController {
 
     getWinner() {
         return this.model.winner;
+    }
+
+    setState(state) {
+        const {players, turn, pieces, lastMovement, stateTimestamp} = state;
+        const {board} = this.model;
+        if (players && turn && pieces && stateTimestamp) {
+            this.model.players = players.map(player => {
+                player.socketId = null;
+                return player;
+            });
+            this.model.turn = turn;
+            board.pieces = pieces.map(p => board.createPiece(p));
+
+            if (lastMovement) {
+                lastMovement.piece = board.createPiece(lastMovement.piece);
+                board.model.lastMovement = lastMovement;
+            }
+        }
     }
 }
 

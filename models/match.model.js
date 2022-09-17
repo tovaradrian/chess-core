@@ -102,7 +102,7 @@ class Match {
 
     finish(winner) {
         this.#finished = true;
-        this.#winner = winner;
+        this.#winner = winner || null;
         this.#turn = null;
     }
 }
